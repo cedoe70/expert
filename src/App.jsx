@@ -1,18 +1,27 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import AdminLayout from "./components/admin/AdminLayout";
+import InvestmentPlans from "./pages/admin/InvestmentPlans";
+import KYCRequests from "./pages/admin/KYCRequests";
+import Withdrawals from "./pages/admin/Withdrawals";
+import UserBalances from "./pages/admin/UserBalances";
+import DepositAddresses from "./pages/admin/DepositAddresses";
 
-const App = () => {
+function App() {
   return (
-    <div className="h-screen flex flex-col items-center justify-center bg-gray-100">
-      <h1 className="text-4xl font-bold mb-4 text-blue-600">Welcome to Expert Earn</h1>
-      <Link
-        to="/admin/investment-plans"
-        className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
-      >
-        Go to Admin Panel
-      </Link>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Navigate to="/admin/investment-plans" replace />} />
+        <Route path="/admin/*" element={<AdminLayout />}>
+          <Route path="investment-plans" element={<InvestmentPlans />} />
+          <Route path="kyc-requests" element={<KYCRequests />} />
+          <Route path="withdrawals" element={<Withdrawals />} />
+          <Route path="user-balances" element={<UserBalances />} />
+          <Route path="deposit-addresses" element={<DepositAddresses />} />
+        </Route>
+      </Routes>
+    </Router>
   );
-};
+}
 
 export default App;
