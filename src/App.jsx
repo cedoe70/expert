@@ -11,7 +11,10 @@ function App() {
   return (
     <Router>
       <Routes>
+        {/* Redirect from root to default admin route */}
         <Route path="/" element={<Navigate to="/admin/investment-plans" replace />} />
+
+        {/* Admin layout with nested routes */}
         <Route path="/admin/*" element={<AdminLayout />}>
           <Route path="investment-plans" element={<InvestmentPlans />} />
           <Route path="kyc-requests" element={<KYCRequests />} />
