@@ -1,0 +1,32 @@
+// pages/api/investments/index.js
+import { Pool } from 'pg';
+
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL, // Make sure DATABASE_URL is set in .env
+  ssl: { rejectUnauthorized: false },
+});
+
+export default async function handler(req, res) {
+  if (req.method === 'POST') {
+    const { userId, planId, amount } = req.body;
+
+    try {
+      const result = await pool.query(
+        'INSERT INTO investments (user_id, plan_id, amount, status) VALUES ($1, $2, $3, $4) RETURNING *',
+        [userId, planId, amount, 'pending']
+      );
+      res.status(200).json({ success: true, investment: result.rows[0] });
+    } catch (error) {
+      res.status(500).json({ success: false, error: error.message });
+    }
+  } else if (req.method === 'GET') {
+    try {
+      const result = await pool.query('SELECT * FROM investments');
+      res.status(200).json({ investments: result.rows });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  } else {
+    res.status(405).end(); // Method Not Allowed
+  }
+}
