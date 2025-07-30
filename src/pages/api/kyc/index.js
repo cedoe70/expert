@@ -1,36 +1,32 @@
 // pages/api/kyc/index.js
+import pool from '@/lib/db';
 
 export default async function handler(req, res) {
   if (req.method === 'POST') {
-    const { userId, fullName, idNumber } = req.body;
-
-    if (!userId || !fullName || !idNumber) {
-      return res.status(400).json({ message: 'Missing required KYC fields.' });
-    }
+    const { userId, fullName, idType, idNumber, documentUrl } = req.body;
 
     try {
-      // Simulate saving to DB (replace with your real DB logic)
-      const kycRequest = {
-        id: Date.now(),
-        userId,
-        fullName,
-        idNumber,
-        status: 'pending',
-        submittedAt: new Date(),
-      };
+      const result = await pool.query(
+        `INSERT INTO kyc_requests (user_id, full_name, id_type, id_number, document_url, status, submitted_at)
+         VALUES ($1, $2, $3, $4, $5, 'pending', NOW())
+         RETURNING *`,
+        [userId, fullName, idType, idNumber, documentUrl]
+      );
 
-      console.log("KYC Request Saved:", kycRequest);
-
-      return res.status(200).json({
-        message: 'KYC submission successful. Awaiting admin review.',
-        kyc: kycRequest,
-      });
+      res.status(200).json({ message: 'KYC submitted', kyc: result.rows[0] });
     } catch (error) {
-      console.error("KYC error:", error);
-      return res.status(500).json({ message: 'Server error. Please try again.' });
+      console.error('Error saving KYC:', error);
+      res.status(500).json({ error: 'Failed to save KYC request' });
+    }
+  } else if (req.method === 'GET') {
+    try {
+      const result = await pool.query('SELECT * FROM kyc_requests ORDER BY submitted_at DESC');
+      res.status(200).json(result.rows);
+    } catch (error) {
+      console.error('Error fetching KYC:', error);
+      res.status(500).json({ error: 'Failed to fetch KYC requests' });
     }
   } else {
-    res.setHeader('Allow', ['POST']);
-    return res.status(405).end(`Method ${req.method} Not Allowed`);
+    res.status(405).json({ error: 'Method not allowed' });
   }
 }
