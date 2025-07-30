@@ -1,44 +1,79 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 
 const KYCRequests = () => {
-  const requests = [
-    { id: 1, user: "John Doe", status: "Pending" },
-    { id: 2, user: "Jane Smith", status: "Pending" },
-  ];
+  const [kycRequests, setKycRequests] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchRequests = async () => {
+    try {
+      const res = await axios.get("/api/admin/kyc");
+      setKycRequests(res.data);
+    } catch (error) {
+      console.error("Failed to fetch KYC requests", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateStatus = async (id, status) => {
+    try {
+      await axios.put(`/api/admin/kyc/${id}`, { status });
+      fetchRequests(); // refresh list
+    } catch (error) {
+      console.error("Failed to update status", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchRequests();
+  }, []);
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">KYC Requests</h1>
-      <div className="bg-white shadow-md rounded-lg overflow-hidden">
-        <table className="min-w-full">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="py-2 px-4 text-left">User</th>
-              <th className="py-2 px-4 text-left">Status</th>
-              <th className="py-2 px-4">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {requests.map((req) => (
-              <tr key={req.id} className="border-t">
-                <td className="py-2 px-4">{req.user}</td>
-                <td className="py-2 px-4">{req.status}</td>
-                <td className="py-2 px-4 space-x-2">
-                  <button className="bg-green-500 text-white px-3 py-1 rounded">
-                    Approve
-                  </button>
-                  <button className="bg-red-500 text-white px-3 py-1 rounded">
-                    Reject
-                  </button>
-                  <button className="bg-yellow-500 text-white px-3 py-1 rounded">
-                    Request Resubmission
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <h2 className="text-2xl font-bold mb-4">KYC Requests</h2>
+      {loading ? (
+        <p>Loading...</p>
+      ) : kycRequests.length === 0 ? (
+        <p>No KYC requests found.</p>
+      ) : (
+        <div className="grid gap-4">
+          {kycRequests.map((request) => (
+            <div
+              key={request.id}
+              className="p-4 border rounded shadow bg-white"
+            >
+              <p><strong>Name:</strong> {request.fullName}</p>
+              <p><strong>ID Number:</strong> {request.idNumber}</p>
+              <p><strong>Status:</strong> {request.status}</p>
+              {request.idCardUrl && (
+                <a
+                  href={request.idCardUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 underline"
+                >
+                  View ID Card
+                </a>
+              )}
+              <div className="mt-2 space-x-2">
+                <button
+                  onClick={() => updateStatus(request.id, "approved")}
+                  className="bg-green-600 text-white py-1 px-3 rounded hover:bg-green-700"
+                >
+                  Approve
+                </button>
+                <button
+                  onClick={() => updateStatus(request.id, "rejected")}
+                  className="bg-red-600 text-white py-1 px-3 rounded hover:bg-red-700"
+                >
+                  Reject
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
