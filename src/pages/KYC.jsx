@@ -1,89 +1,79 @@
-"use client";
+// pages/kyc.jsx
 import React, { useState } from "react";
+import axios from "axios";
 
-export default function KYC() {
+const KYC = () => {
   const [fullName, setFullName] = useState("");
   const [idNumber, setIdNumber] = useState("");
-  const [status, setStatus] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [file, setFile] = useState(null);
+  const [message, setMessage] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setStatus(null);
-    setLoading(true);
+
+    if (!file) {
+      setMessage("Please upload a valid ID card.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("fullName", fullName);
+    formData.append("idNumber", idNumber);
+    formData.append("idCard", file);
 
     try {
-      const response = await fetch("/api/kyc", {
-        method: "POST",
+      const response = await axios.post("/api/kyc", formData, {
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "multipart/form-data",
         },
-        body: JSON.stringify({
-          userId: 1, // Replace with real user ID if using auth
-          fullName,
-          idNumber,
-        }),
       });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Something went wrong.");
-      }
-
-      setStatus({ type: "success", message: data.message });
+      setMessage("KYC submitted successfully.");
       setFullName("");
       setIdNumber("");
-    } catch (err) {
-      setStatus({ type: "error", message: err.message });
-    } finally {
-      setLoading(false);
+      setFile(null);
+    } catch (error) {
+      console.error(error);
+      setMessage("Error submitting KYC.");
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-6">
-        <h1 className="text-2xl font-semibold mb-4 text-center">KYC Verification</h1>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            type="text"
-            placeholder="Full Name"
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
-            required
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-
-          <input
-            type="text"
-            placeholder="ID Number"
-            value={idNumber}
-            onChange={(e) => setIdNumber(e.target.value)}
-            required
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg transition duration-200"
-          >
-            {loading ? "Submitting..." : "Submit KYC"}
-          </button>
-        </form>
-
-        {status && (
-          <div
-            className={`mt-4 text-center text-sm ${
-              status.type === "success" ? "text-green-600" : "text-red-600"
-            }`}
-          >
-            {status.message}
-          </div>
-        )}
-      </div>
+    <div className="max-w-xl mx-auto mt-10 p-6 bg-white rounded shadow">
+      <h2 className="text-2xl font-semibold mb-4">KYC Verification</h2>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <input
+          type="text"
+          placeholder="Full Name"
+          className="w-full p-2 border rounded"
+          value={fullName}
+          onChange={(e) => setFullName(e.target.value)}
+          required
+        />
+        <input
+          type="text"
+          placeholder="ID Number"
+          className="w-full p-2 border rounded"
+          value={idNumber}
+          onChange={(e) => setIdNumber(e.target.value)}
+          required
+        />
+        <input
+          type="file"
+          accept="image/*,.pdf"
+          className="w-full"
+          onChange={(e) => setFile(e.target.files[0])}
+          required
+        />
+        <button
+          type="submit"
+          className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
+        >
+          Submit KYC
+        </button>
+      </form>
+      {message && <p className="mt-4 text-sm text-gray-700">{message}</p>}
     </div>
   );
-}
+};
+
+export default KYC;
