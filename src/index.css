@@ -1,23 +1,36 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&family=Quicksand:wght@500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@400;600;700&family=Quicksand:wght@500;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Optional global tweaks */
+/* Global Base Styles */
 body {
-  @apply bg-soft text-dark font-sans;
+  @apply font-sans bg-soft text-dark;
 }
 
-/* Customize scrollbars (modern look) */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+h1, h2, h3, h4, h5, h6 {
+  @apply font-display text-dark;
 }
-::-webkit-scrollbar-thumb {
-  background-color: #d1d5db; /* gray-300 */
-  border-radius: 4px;
+
+button {
+  @apply font-semibold rounded-xl px-4 py-2 transition duration-200;
 }
-::-webkit-scrollbar-track {
-  background-color: transparent;
+
+input, select, textarea {
+  @apply rounded-lg border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-primary;
+}
+
+/* Cards */
+.card {
+  @apply bg-white shadow-card rounded-2xl p-6 transition duration-200 hover:shadow-hover;
+}
+
+/* Utilities */
+.btn-primary {
+  @apply bg-primary text-white hover:bg-secondary;
+}
+
+.btn-accent {
+  @apply bg-accent text-white hover:bg-yellow-500;
 }
