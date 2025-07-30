@@ -1,65 +1,48 @@
-import React from "react";
+import React from "react"
 
 const Dashboard = () => {
-  const userName = "John Doe"; // replace with dynamic user data
-  const currentBalance = "$5,200.00";
-  const activePlan = {
-    name: "Gold Plan",
-    interestRate: "12%",
-    amount: "$2,000",
-  };
-  const transactions = [
-    { id: 1, type: "Deposit", amount: "$1,000", date: "2025-07-28" },
-    { id: 2, type: "Withdrawal", amount: "$500", date: "2025-07-26" },
-    { id: 3, type: "Deposit", amount: "$2,000", date: "2025-07-22" },
-  ];
-
   return (
-    <div className="p-6 bg-gray-100 min-h-screen">
-      <h1 className="text-2xl font-semibold mb-4">Welcome, {userName} 👋</h1>
+    <div className="space-y-8">
+      {/* Welcome Header */}
+      <div>
+        <h2 className="text-3xl font-bold text-gray-800">Welcome back 👋</h2>
+        <p className="text-gray-500">Track your investments and activity easily.</p>
+      </div>
 
-      {/* Balance and Plan */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        <div className="bg-white p-6 rounded-2xl shadow">
-          <h2 className="text-lg font-medium text-gray-700 mb-2">Current Balance</h2>
-          <p className="text-3xl font-bold text-green-600">{currentBalance}</p>
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="bg-gradient-to-br from-purple-500 to-indigo-500 text-white p-6 rounded-2xl shadow-md">
+          <h3 className="text-lg font-semibold">Total Invested</h3>
+          <p className="text-2xl font-bold mt-2">$5,200</p>
         </div>
-        <div className="bg-white p-6 rounded-2xl shadow">
-          <h2 className="text-lg font-medium text-gray-700 mb-2">Active Plan</h2>
-          <p className="text-gray-800">{activePlan.name}</p>
-          <p className="text-sm text-gray-500">Amount: {activePlan.amount}</p>
-          <p className="text-sm text-gray-500">Interest: {activePlan.interestRate}</p>
+
+        <div className="bg-gradient-to-br from-green-400 to-teal-500 text-white p-6 rounded-2xl shadow-md">
+          <h3 className="text-lg font-semibold">Total Returns</h3>
+          <p className="text-2xl font-bold mt-2">$1,200</p>
+        </div>
+
+        <div className="bg-gradient-to-br from-yellow-400 to-orange-500 text-white p-6 rounded-2xl shadow-md">
+          <h3 className="text-lg font-semibold">Withdrawals</h3>
+          <p className="text-2xl font-bold mt-2">$800</p>
+        </div>
+
+        <div className="bg-gradient-to-br from-pink-500 to-rose-500 text-white p-6 rounded-2xl shadow-md">
+          <h3 className="text-lg font-semibold">KYC Status</h3>
+          <p className="text-2xl font-bold mt-2">Verified ✅</p>
         </div>
       </div>
 
-      {/* Transactions */}
-      <div className="bg-white p-6 rounded-2xl shadow mb-6">
-        <h2 className="text-lg font-medium text-gray-700 mb-4">Recent Transactions</h2>
-        <ul className="space-y-3">
-          {transactions.map(tx => (
-            <li key={tx.id} className="flex justify-between items-center border-b pb-2">
-              <span className="text-gray-600">{tx.type}</span>
-              <span className="text-gray-800 font-semibold">{tx.amount}</span>
-              <span className="text-sm text-gray-500">{tx.date}</span>
-            </li>
-          ))}
+      {/* Recent Activity */}
+      <div className="bg-white rounded-xl shadow p-6">
+        <h3 className="text-xl font-semibold mb-4">Recent Activity</h3>
+        <ul className="space-y-3 text-gray-700">
+          <li>✅ You invested $500 in Basic Plan – July 28</li>
+          <li>💸 You requested a $200 withdrawal – July 26</li>
+          <li>📄 Your KYC was approved – July 25</li>
         </ul>
       </div>
-
-      {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <button className="bg-blue-600 text-white py-3 rounded-xl shadow hover:bg-blue-700">
-          Invest Now
-        </button>
-        <button className="bg-yellow-500 text-white py-3 rounded-xl shadow hover:bg-yellow-600">
-          Withdraw Funds
-        </button>
-        <button className="bg-gray-800 text-white py-3 rounded-xl shadow hover:bg-gray-900">
-          View KYC Status
-        </button>
-      </div>
     </div>
-  );
-};
+  )
+}
 
-export default Dashboard;
+export default Dashboard
