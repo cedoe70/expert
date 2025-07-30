@@ -1,42 +1,89 @@
-import React from "react";
+"use client";
+import React, { useState } from "react";
 
-const KYC = () => {
+export default function KYC() {
+  const [fullName, setFullName] = useState("");
+  const [idNumber, setIdNumber] = useState("");
+  const [status, setStatus] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setStatus(null);
+    setLoading(true);
+
+    try {
+      const response = await fetch("/api/kyc", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: 1, // Replace with real user ID if using auth
+          fullName,
+          idNumber,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Something went wrong.");
+      }
+
+      setStatus({ type: "success", message: data.message });
+      setFullName("");
+      setIdNumber("");
+    } catch (err) {
+      setStatus({ type: "error", message: err.message });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div className="p-6">
-      <h2 className="text-2xl font-semibold mb-6">Submit KYC Documents</h2>
-      <form className="space-y-4 max-w-md bg-white shadow-md p-6 rounded-xl">
-        <div>
-          <label className="block mb-1 font-medium">Full Name</label>
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-6">
+        <h1 className="text-2xl font-semibold mb-4 text-center">KYC Verification</h1>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
           <input
             type="text"
-            className="w-full px-4 py-2 border rounded-lg"
-            placeholder="Your full name"
+            placeholder="Full Name"
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+            required
+            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-        </div>
 
-        <div>
-          <label className="block mb-1 font-medium">Document Type</label>
-          <select className="w-full px-4 py-2 border rounded-lg">
-            <option>Passport</option>
-            <option>National ID</option>
-            <option>Driver’s License</option>
-          </select>
-        </div>
+          <input
+            type="text"
+            placeholder="ID Number"
+            value={idNumber}
+            onChange={(e) => setIdNumber(e.target.value)}
+            required
+            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
 
-        <div>
-          <label className="block mb-1 font-medium">Upload Document</label>
-          <input type="file" className="w-full px-2 py-2 border rounded-lg" />
-        </div>
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg transition duration-200"
+          >
+            {loading ? "Submitting..." : "Submit KYC"}
+          </button>
+        </form>
 
-        <button
-          type="submit"
-          className="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition"
-        >
-          Submit for Review
-        </button>
-      </form>
+        {status && (
+          <div
+            className={`mt-4 text-center text-sm ${
+              status.type === "success" ? "text-green-600" : "text-red-600"
+            }`}
+          >
+            {status.message}
+          </div>
+        )}
+      </div>
     </div>
   );
-};
-
-export default KYC;
+}
