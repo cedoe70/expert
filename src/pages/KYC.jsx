@@ -1,79 +1,125 @@
 // pages/kyc.jsx
-import React, { useState } from "react";
-import axios from "axios";
+import React, { useState } from 'react';
+import axios from 'axios';
 
-const KYC = () => {
-  const [fullName, setFullName] = useState("");
-  const [idNumber, setIdNumber] = useState("");
-  const [file, setFile] = useState(null);
-  const [message, setMessage] = useState("");
+export default function KYCPage() {
+  const [form, setForm] = useState({
+    userId: '',
+    fullName: '',
+    idType: '',
+    idNumber: '',
+    documentFile: null,
+  });
+  const [previewUrl, setPreviewUrl] = useState('');
+  const [status, setStatus] = useState('');
+
+  const handleChange = (e) => {
+    const { name, value, files } = e.target;
+    if (name === 'documentFile') {
+      const file = files[0];
+      setForm({ ...form, documentFile: file });
+      setPreviewUrl(URL.createObjectURL(file));
+    } else {
+      setForm({ ...form, [name]: value });
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!file) {
-      setMessage("Please upload a valid ID card.");
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append("fullName", fullName);
-    formData.append("idNumber", idNumber);
-    formData.append("idCard", file);
+    setStatus('Submitting...');
 
     try {
-      const response = await axios.post("/api/kyc", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+      // 1. Upload the document to Cloudinary or UploadThing first
+      const uploadData = new FormData();
+      uploadData.append('file', form.documentFile);
+      uploadData.append('upload_preset', 'your_upload_preset'); // Replace with your preset
+
+      const uploadRes = await axios.post(
+        'https://api.cloudinary.com/v1_1/your_cloud_name/upload',
+        uploadData
+      );
+
+      const documentUrl = uploadRes.data.secure_url;
+
+      // 2. Submit KYC form data to your backend
+      const res = await axios.post('/api/kyc', {
+        userId: form.userId,
+        fullName: form.fullName,
+        idType: form.idType,
+        idNumber: form.idNumber,
+        documentUrl,
       });
-      setMessage("KYC submitted successfully.");
-      setFullName("");
-      setIdNumber("");
-      setFile(null);
-    } catch (error) {
-      console.error(error);
-      setMessage("Error submitting KYC.");
+
+      setStatus('KYC submitted successfully!');
+      setForm({
+        userId: '',
+        fullName: '',
+        idType: '',
+        idNumber: '',
+        documentFile: null,
+      });
+      setPreviewUrl('');
+    } catch (err) {
+      console.error(err);
+      setStatus('Submission failed.');
     }
   };
 
   return (
-    <div className="max-w-xl mx-auto mt-10 p-6 bg-white rounded shadow">
-      <h2 className="text-2xl font-semibold mb-4">KYC Verification</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
+    <div className="max-w-xl mx-auto p-6 bg-white rounded shadow">
+      <h2 className="text-2xl font-bold mb-4">Submit KYC</h2>
+      <form onSubmit={handleSubmit} className="space-y-4" encType="multipart/form-data">
         <input
-          type="text"
-          placeholder="Full Name"
-          className="w-full p-2 border rounded"
-          value={fullName}
-          onChange={(e) => setFullName(e.target.value)}
+          name="userId"
+          placeholder="User ID"
+          value={form.userId}
+          onChange={handleChange}
+          className="w-full border p-2 rounded"
           required
         />
         <input
-          type="text"
+          name="fullName"
+          placeholder="Full Name"
+          value={form.fullName}
+          onChange={handleChange}
+          className="w-full border p-2 rounded"
+          required
+        />
+        <input
+          name="idType"
+          placeholder="ID Type (e.g. Passport)"
+          value={form.idType}
+          onChange={handleChange}
+          className="w-full border p-2 rounded"
+          required
+        />
+        <input
+          name="idNumber"
           placeholder="ID Number"
-          className="w-full p-2 border rounded"
-          value={idNumber}
-          onChange={(e) => setIdNumber(e.target.value)}
+          value={form.idNumber}
+          onChange={handleChange}
+          className="w-full border p-2 rounded"
           required
         />
         <input
           type="file"
+          name="documentFile"
           accept="image/*,.pdf"
-          className="w-full"
-          onChange={(e) => setFile(e.target.files[0])}
+          onChange={handleChange}
+          className="w-full border p-2 rounded"
           required
         />
+        {previewUrl && (
+          <img src={previewUrl} alt="Preview" className="w-full h-40 object-cover rounded" />
+        )}
         <button
           type="submit"
-          className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
         >
           Submit KYC
         </button>
+        <p className="text-sm text-gray-600">{status}</p>
       </form>
-      {message && <p className="mt-4 text-sm text-gray-700">{message}</p>}
     </div>
   );
-};
-
-export default KYC;
+}
