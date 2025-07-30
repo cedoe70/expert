@@ -1,122 +1,44 @@
 import React from "react";
-import { Outlet, NavLink } from "react-router-dom";
-import { FaMoneyBillWave, FaUserShield, FaWallet, FaUsers, FaChartLine, FaHome, FaCog, FaExchangeAlt } from "react-icons/fa";
+import { Link, Outlet, useLocation } from "react-router-dom";
+import { FaTachometerAlt, FaMoneyCheckAlt, FaUsers, FaCog, FaAddressCard, FaChartLine, FaHistory, FaFileUpload } from "react-icons/fa";
 
 const AdminLayout = () => {
+  const location = useLocation();
+
+  const navItems = [
+    { path: "/admin/dashboard", label: "Dashboard", icon: <FaTachometerAlt /> },
+    { path: "/admin/investment-plans", label: "Investment Plans", icon: <FaChartLine /> },
+    { path: "/admin/kyc-requests", label: "KYC Requests", icon: <FaAddressCard /> },
+    { path: "/admin/withdrawals", label: "Withdrawals", icon: <FaMoneyCheckAlt /> },
+    { path: "/admin/user-balances", label: "User Balances", icon: <FaUsers /> },
+    { path: "/admin/deposit-addresses", label: "Deposit Addresses", icon: <FaFileUpload /> },
+    { path: "/admin/activity-log", label: "Activity Log", icon: <FaHistory /> },
+    { path: "/admin/settings", label: "Settings", icon: <FaCog /> },
+  ];
+
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex min-h-screen">
       {/* Sidebar */}
-      <aside className="w-64 bg-white shadow-lg flex flex-col justify-between">
-        <div>
-          <div className="p-6 text-2xl font-bold text-blue-600 border-b">Expert Earn Admin</div>
-          <nav className="mt-6">
-            <ul className="space-y-2 px-4">
-              <li>
-                <NavLink
-                  to="/admin/dashboard"
-                  className={({ isActive }) =>
-                    `flex items-center gap-3 p-3 rounded-md font-medium hover:bg-blue-100 ${
-                      isActive ? "bg-blue-500 text-white" : "text-gray-700"
-                    }`
-                  }
-                >
-                  <FaHome /> Dashboard
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to="/admin/investment-plans"
-                  className={({ isActive }) =>
-                    `flex items-center gap-3 p-3 rounded-md font-medium hover:bg-blue-100 ${
-                      isActive ? "bg-blue-500 text-white" : "text-gray-700"
-                    }`
-                  }
-                >
-                  <FaChartLine /> Investment Plans
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to="/admin/kyc-requests"
-                  className={({ isActive }) =>
-                    `flex items-center gap-3 p-3 rounded-md font-medium hover:bg-blue-100 ${
-                      isActive ? "bg-blue-500 text-white" : "text-gray-700"
-                    }`
-                  }
-                >
-                  <FaUserShield /> KYC Requests
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to="/admin/withdrawals"
-                  className={({ isActive }) =>
-                    `flex items-center gap-3 p-3 rounded-md font-medium hover:bg-blue-100 ${
-                      isActive ? "bg-blue-500 text-white" : "text-gray-700"
-                    }`
-                  }
-                >
-                  <FaExchangeAlt /> Withdrawals
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to="/admin/user-balances"
-                  className={({ isActive }) =>
-                    `flex items-center gap-3 p-3 rounded-md font-medium hover:bg-blue-100 ${
-                      isActive ? "bg-blue-500 text-white" : "text-gray-700"
-                    }`
-                  }
-                >
-                  <FaWallet /> User Balances
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to="/admin/deposit-addresses"
-                  className={({ isActive }) =>
-                    `flex items-center gap-3 p-3 rounded-md font-medium hover:bg-blue-100 ${
-                      isActive ? "bg-blue-500 text-white" : "text-gray-700"
-                    }`
-                  }
-                >
-                  <FaMoneyBillWave /> Deposit Addresses
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to="/admin/activity-log"
-                  className={({ isActive }) =>
-                    `flex items-center gap-3 p-3 rounded-md font-medium hover:bg-blue-100 ${
-                      isActive ? "bg-blue-500 text-white" : "text-gray-700"
-                    }`
-                  }
-                >
-                  <FaUsers /> Activity Log
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to="/admin/settings"
-                  className={({ isActive }) =>
-                    `flex items-center gap-3 p-3 rounded-md font-medium hover:bg-blue-100 ${
-                      isActive ? "bg-blue-500 text-white" : "text-gray-700"
-                    }`
-                  }
-                >
-                  <FaCog /> Settings
-                </NavLink>
-              </li>
-            </ul>
-          </nav>
-        </div>
-        <div className="p-4 text-sm text-center text-gray-400 border-t">
-          &copy; {new Date().getFullYear()} Expert Earn
-        </div>
+      <aside className="w-64 bg-gray-900 text-white p-4">
+        <h1 className="text-2xl font-bold mb-6">Admin Panel</h1>
+        <nav className="space-y-2">
+          {navItems.map((item) => (
+            <Link
+              key={item.path}
+              to={item.path}
+              className={`flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 transition ${
+                location.pathname === item.path ? "bg-gray-700" : ""
+              }`}
+            >
+              {item.icon}
+              <span>{item.label}</span>
+            </Link>
+          ))}
+        </nav>
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto p-6">
+      <main className="flex-1 bg-gray-100 p-6">
         <Outlet />
       </main>
     </div>
