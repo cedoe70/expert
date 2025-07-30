@@ -1,29 +1,20 @@
-import pool from "@/utils/db";
+import pool from '@/lib/db';
 
 export default async function handler(req, res) {
-  if (req.method === "GET") {
+  if (req.method === 'GET') {
     try {
-      const result = await pool.query("SELECT * FROM users");
+      const result = await pool.query(`
+        SELECT k.*, u.name AS user_name, u.email
+        FROM kyc_requests k
+        JOIN users u ON k.user_id = u.id
+        ORDER BY submitted_at DESC
+      `);
       res.status(200).json(result.rows);
-    } catch (error) {
-      console.error("Error fetching users:", error);
-      res.status(500).json({ error: "Server error" });
-    }
-  } else if (req.method === "POST") {
-    const { name, email, password } = req.body;
-
-    try {
-      const result = await pool.query(
-        "INSERT INTO users (name, email, password, created_at) VALUES ($1, $2, $3, NOW()) RETURNING *",
-        [name, email, password]
-      );
-
-      res.status(201).json(result.rows[0]);
-    } catch (error) {
-      console.error("Error inserting user:", error);
-      res.status(500).json({ error: "Server error" });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Failed to fetch KYC requests' });
     }
   } else {
-    res.status(405).json({ error: "Method not allowed" });
+    res.status(405).json({ message: 'Method not allowed' });
   }
 }
