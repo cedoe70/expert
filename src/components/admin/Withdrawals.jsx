@@ -25,45 +25,41 @@ const Withdrawals = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status }),
       });
-
       if (res.ok) {
         setWithdrawals((prev) =>
-          prev.map((item) =>
-            item.id === id ? { ...item, status } : item
+          prev.map((withdrawal) =>
+            withdrawal.id === id ? { ...withdrawal, status } : withdrawal
           )
         );
       }
     } catch (err) {
-      console.error(err);
+      console.error("Error updating status:", err);
     }
   };
 
   return (
     <AdminLayout>
       <div className="p-6">
-        <h1 className="text-2xl font-bold mb-6">Withdrawal Requests</h1>
+        <h1 className="text-2xl font-bold mb-6">Withdrawals</h1>
         {withdrawals.length === 0 ? (
-          <p>No withdrawal requests available.</p>
+          <p>No withdrawal requests found.</p>
         ) : (
           <div className="space-y-4">
-            {withdrawals.map((withdrawal) => (
-              <div
-                key={withdrawal.id}
-                className="bg-white rounded-xl shadow p-4"
-              >
-                <p><strong>User:</strong> {withdrawal.userEmail}</p>
-                <p><strong>Amount:</strong> ${withdrawal.amount}</p>
-                <p><strong>Status:</strong> {withdrawal.status}</p>
+            {withdrawals.map((wd) => (
+              <div key={wd.id} className="bg-white shadow rounded-xl p-4">
+                <p><strong>User:</strong> {wd.userEmail}</p>
+                <p><strong>Amount:</strong> ${wd.amount}</p>
+                <p><strong>Status:</strong> {wd.status}</p>
                 <div className="mt-2 space-x-2">
                   <button
-                    onClick={() => handleStatusChange(withdrawal.id, "approved")}
-                    className="px-4 py-1 rounded bg-green-600 text-white"
+                    onClick={() => handleStatusChange(wd.id, "approved")}
+                    className="bg-green-600 text-white px-4 py-1 rounded"
                   >
                     Approve
                   </button>
                   <button
-                    onClick={() => handleStatusChange(withdrawal.id, "rejected")}
-                    className="px-4 py-1 rounded bg-red-600 text-white"
+                    onClick={() => handleStatusChange(wd.id, "rejected")}
+                    className="bg-red-600 text-white px-4 py-1 rounded"
                   >
                     Reject
                   </button>
