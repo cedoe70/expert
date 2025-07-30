@@ -1,19 +1,18 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 
-// Admin Layout and Pages
+// Admin components
 import AdminLayout from "./components/admin/AdminLayout";
-import AdminDashboard from "./components/admin/Dashboard";
 import InvestmentPlans from "./components/admin/InvestmentPlans";
 import KYCRequests from "./components/admin/KYCRequests";
 import Withdrawals from "./components/admin/Withdrawals";
 import UserBalances from "./components/admin/UserBalances";
 import DepositAddresses from "./components/admin/DepositAddresses";
 import ActivityLog from "./components/admin/ActivityLog";
-import Settings from "./components/admin/Settings";
+import AdminSettings from "./components/admin/Settings";
+import AdminDashboard from "./components/admin/AdminDashboard"; // Only if you later re-create this
 
-// User Layout and Pages
-import UserLayout from "./components/user/UserLayout";
+// User components
 import UserDashboard from "./components/user/Dashboard";
 import Invest from "./components/user/Invest";
 import Withdraw from "./components/user/Withdraw";
@@ -23,28 +22,24 @@ function App() {
   return (
     <Router>
       <Routes>
-        {/* Redirect root to admin investment plans page */}
-        <Route path="/" element={<Navigate to="/admin/investment-plans" replace />} />
+        {/* Redirect root to user dashboard */}
+        <Route path="/" element={<Navigate to="/user/dashboard" />} />
 
-        {/* Admin routes */}
-        <Route path="/admin" element={<AdminLayout />}>
-          <Route path="dashboard" element={<AdminDashboard />} />
-          <Route path="investment-plans" element={<InvestmentPlans />} />
-          <Route path="kyc-requests" element={<KYCRequests />} />
-          <Route path="withdrawals" element={<Withdrawals />} />
-          <Route path="user-balances" element={<UserBalances />} />
-          <Route path="deposit-addresses" element={<DepositAddresses />} />
-          <Route path="activity-log" element={<ActivityLog />} />
-          <Route path="settings" element={<Settings />} />
-        </Route>
+        {/* Admin Routes */}
+        <Route path="/admin/dashboard" element={<AdminLayout><AdminDashboard /></AdminLayout>} />
+        <Route path="/admin/investment-plans" element={<AdminLayout><InvestmentPlans /></AdminLayout>} />
+        <Route path="/admin/kyc-requests" element={<AdminLayout><KYCRequests /></AdminLayout>} />
+        <Route path="/admin/withdrawals" element={<AdminLayout><Withdrawals /></AdminLayout>} />
+        <Route path="/admin/user-balances" element={<AdminLayout><UserBalances /></AdminLayout>} />
+        <Route path="/admin/deposit-addresses" element={<AdminLayout><DepositAddresses /></AdminLayout>} />
+        <Route path="/admin/activity-log" element={<AdminLayout><ActivityLog /></AdminLayout>} />
+        <Route path="/admin/settings" element={<AdminLayout><AdminSettings /></AdminLayout>} />
 
-        {/* User routes */}
-        <Route path="/user" element={<UserLayout />}>
-          <Route path="dashboard" element={<UserDashboard />} />
-          <Route path="invest" element={<Invest />} />
-          <Route path="withdraw" element={<Withdraw />} />
-          <Route path="kyc" element={<KYC />} />
-        </Route>
+        {/* User Routes */}
+        <Route path="/user/dashboard" element={<UserDashboard />} />
+        <Route path="/user/invest" element={<Invest />} />
+        <Route path="/user/withdraw" element={<Withdraw />} />
+        <Route path="/user/kyc" element={<KYC />} />
       </Routes>
     </Router>
   );
